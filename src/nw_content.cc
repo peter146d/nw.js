@@ -1124,14 +1124,17 @@ bool RphGuestFilterURLHook(RenderProcessHost* rph, const GURL* url)  {
   int process_id = rph->GetID();
   if (!renderer_state->GetOwnerInfo(process_id, nullptr, &owner_extension))
     return false;
+  VLOG(1) << "RphGuestFilterURLHook: got owner_extension: " << owner_extension;
   const Extension* extension =
     ExtensionRegistry::Get(rph->GetBrowserContext())->enabled_extensions().GetByID(owner_extension);
   if (!extension)
     return false;
+  VLOG(1) << "RphGuestFilterURLHook: got extension.";
   bool file_scheme = false;
   if (WebviewInfo::IsURLWebviewAccessible(extension,
                                           WebViewGuest::GetPartitionID(rph),
                                           *url, &file_scheme)) {
+    VLOG(1) << "RphGuestFilterURLHook: IsURLWebviewAccessible: " << file_scheme;
     if (file_scheme) {
       content::ChildProcessSecurityPolicy::GetInstance()->GrantScheme(
           process_id, url::kFileScheme);
